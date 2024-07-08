@@ -1,4 +1,7 @@
 local targetItemNames = {"M9", "Handcuffs", "Keycard", "Fal", "AR 15", "Glock", "Taser"}
+local RunService = game:GetService("RunService")
+
+local staticTick = 0  -- Inițializăm staticTick aici pentru a evita nil
 
 local function getTargetItemNames(player)
     local targetItems = {}
@@ -41,8 +44,8 @@ local function adjustTextSizeBasedOnDistance(player, textLabel)
 
     if character and playerCharacter and character:FindFirstChild("HumanoidRootPart") and playerCharacter:FindFirstChild("HumanoidRootPart") then
         local distance = (character.HumanoidRootPart.Position - playerCharacter.HumanoidRootPart.Position).Magnitude
-        local newSize = math.clamp(4 - (distance / 50), 1, 2) 
-        textLabel.TextSize = newSize * 10 
+        local newSize = math.clamp(4 - (distance / 50), 1, 2)
+        textLabel.TextSize = newSize * 10
     end
 end
 
@@ -114,9 +117,11 @@ game:GetService("Players").PlayerAdded:Connect(function(player)
     end)
 end)
 
-updateESPForAllPlayers()
-
-while true do
-    updateESPForAllPlayers()
-    wait(5)
-end
+-- Actualizăm ESP-ul pentru toți jucătorii o dată la 5 secunde
+RunService.Heartbeat:Connect(function()
+    staticTick = staticTick + 1
+    if staticTick >= 5 then
+        updateESPForAllPlayers()
+        staticTick = 0
+    end
+end)
